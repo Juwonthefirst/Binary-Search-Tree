@@ -30,26 +30,28 @@ export class Tree {
 		this.root = buildTree(this.array, 0, this.array.length - 1)
 	}
 	
-	#getSuccessorAndParent(node, previous = null){
-		if(node.leftNode === null){
+	#getSuccessorAndParent(node, previous = null) {
+		if (node.leftNode === null) {
 			return [previous, node]
 		}
 		return this.#getSuccessorAndParent(node.leftNode, node)
 	}
 	
-	#traverse(value, node, parentNode = null) {
+	find(value, node = this.root, parentNode = null) {
 		if (node.value === value) {
 			return [node, parentNode]
 		}
-		return (node.value > value) ? this.#traverse(value, node.leftNode, node) : this.#traverse(value, node.rightNode, node)
+		return (node.value > value) ? this.find(value, node.leftNode, node) : this.find(value, node.rightNode, node)
 	}
 	
 	insert(value, node = this.root) {
 		if (this.array.includes(value)) {
 			throw new Error('Value already exists in the tree')
+			return
 		}
 		
 		if (node === null) {
+			this.array.push(value)
 			return new Node(value)
 		}
 		
@@ -60,23 +62,38 @@ export class Tree {
 		else if (node.value < value) {
 			node.rightNode = this.insert(value, node.rightNode)
 		}
-		this.array.push(value)
 		return node
 	}
 	
-	deleteItem(value){
-		const [node, parentNode] = this.#traverse(value, this.root)
-		if((!node.rightNode) && (!node.leftNode) && (parentNode.leftNode === node)){
+	deleteItem(value) {
+		const [node, parentNode] = this.find(value)
+		if ((!node.rightNode) && (!node.leftNode) && (parentNode.leftNode === node)) {
 			parentNode.leftNode = null
-			return
+			
+		}
+		else if ((!node.rightNode) && (!node.leftNode) && (parentNode.rightNode === node)) {
+			parentNode.rightNode = null
+			
 		}
 		
-		if((!node.rightNode) && (!node.leftNode) && (parentNode.rightNode === node)){
-			parentNode.rightNode = null
-			return
+		// delete case for node with one child
+		else if ((!node.rightNode) || (!node.leftNode)) {
+			// copying the node child into the target node then deleting the original child
+			let nodeChild = node.leftNode || node.rightNode
+			node.value = nodeChild.value
+			node.leftNode = nodeChild.leftNode
+			node.rightNode = nodeChild.rightNode
+			
 		}
-		const [successorParent, nodeSuccessor] = this.#getSuccessorAndParent(node.rightNode, node)
-		console.log(successorParent, nodeSuccessor)
-		console.log(parentNode)
+		
+		else {
+			const [successorParent, nodeSuccessor] = this.#getSuccessorAndParent(node.rightNode, node)
+			node.value = nodeSuccessor.value
+			//it always goes to the left node, I've checked 
+			successorParent.leftNode = null
+		}
+		
+		let index = this.array.indexOf(value)
+		this.array.splice(index,1)
 	}
 }
