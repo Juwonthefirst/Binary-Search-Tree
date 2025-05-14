@@ -30,17 +30,19 @@ export class Tree {
 		this.root = buildTree(this.array, 0, this.array.length - 1)
 	}
 	
-	insert(value, node = this.root) {
+	insert(value) {
 		if (this.array.includes(value)) {
 			throw new Error('Value already exists in the tree')
 		}
 		
-		if (value < currentNode.value) {
-			currentNode = currentNode.leftNode
-		}
-		else if (value > currentNode.value) {
-			console.log(currentNode.rightNode)
-			currentNode = currentNode.rightNode
+		while (currentNode) {
+			if (value < currentNode.value) {
+				currentNode = currentNode.leftNode
+			}
+			else if (value > currentNode.value) {
+				console.log(currentNode.rightNode)
+				currentNode = currentNode.rightNode
+			}
 		}
 		return currentNode
 	}
