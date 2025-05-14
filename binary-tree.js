@@ -30,28 +30,53 @@ export class Tree {
 		this.root = buildTree(this.array, 0, this.array.length - 1)
 	}
 	
-	#traverse(value, node){
-		if(node.value > value){
-			return this.#traverse(value, node.leftNode)
+	#getSuccessorAndParent(node, previous = null){
+		if(node.leftNode === null){
+			return [previous, node]
 		}
-		if(node.value < value){
-			return this.#traverse(value, node.rightNode)
-		}
+		return this.#getSuccessorAndParent(node.leftNode, node)
 	}
 	
-	insert(value) {
+	#traverse(value, node, parentNode = null) {
+		if (node.value === value) {
+			return [node, parentNode]
+		}
+		return (node.value > value) ? this.#traverse(value, node.leftNode, node) : this.#traverse(value, node.rightNode, node)
+	}
+	
+	insert(value, node = this.root) {
 		if (this.array.includes(value)) {
 			throw new Error('Value already exists in the tree')
 		}
-		let currentNode = this.root
-		while (currentNode) {
-			if (value < currentNode.value) {
-				currentNode = currentNode.leftNode
-			}
-			else if (value > currentNode.value) {
-				console.log(currentNode.rightNode)
-				currentNode = currentNode.rightNode
-			}
+		
+		if (node === null) {
+			return new Node(value)
 		}
+		
+		if (node.value > value) {
+			node.leftNode = this.insert(value, node.leftNode)
+		}
+		
+		else if (node.value < value) {
+			node.rightNode = this.insert(value, node.rightNode)
+		}
+		this.array.push(value)
+		return node
+	}
+	
+	deleteItem(value){
+		const [node, parentNode] = this.#traverse(value, this.root)
+		if((!node.rightNode) && (!node.leftNode) && (parentNode.leftNode === node)){
+			parentNode.leftNode = null
+			return
+		}
+		
+		if((!node.rightNode) && (!node.leftNode) && (parentNode.rightNode === node)){
+			parentNode.rightNode = null
+			return
+		}
+		const [successorParent, nodeSuccessor] = this.#getSuccessorAndParent(node.rightNode, node)
+		console.log(successorParent, nodeSuccessor)
+		console.log(parentNode)
 	}
 }
