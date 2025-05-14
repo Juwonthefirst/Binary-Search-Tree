@@ -30,11 +30,20 @@ export class Tree {
 		this.root = buildTree(this.array, 0, this.array.length - 1)
 	}
 	
+	#traverse(value, node){
+		if(node.value > value){
+			return this.#traverse(value, node.leftNode)
+		}
+		if(node.value < value){
+			return this.#traverse(value, node.rightNode)
+		}
+	}
+	
 	insert(value) {
 		if (this.array.includes(value)) {
 			throw new Error('Value already exists in the tree')
 		}
-		
+		let currentNode = this.root
 		while (currentNode) {
 			if (value < currentNode.value) {
 				currentNode = currentNode.leftNode
@@ -44,6 +53,5 @@ export class Tree {
 				currentNode = currentNode.rightNode
 			}
 		}
-		return currentNode
 	}
 }
