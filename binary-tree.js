@@ -12,7 +12,7 @@ const cleanUpArray = function(array) {
 	return [...new Set(array)].sort((a, b) => a - b)
 }
 
-const buildTree = function(array, start, end) {
+const buildTree = function(array, start = 0, end = array.length - 1) {
 	
 	if (start > end) {
 		return null;
@@ -29,7 +29,7 @@ const buildTree = function(array, start, end) {
 export class Tree {
 	constructor(array) {
 		this.array = cleanUpArray(array)
-		this.root = buildTree(this.array, 0, this.array.length - 1)
+		this.root = buildTree(this.array)
 		this.queue = new LinkedList()
 		this.queue.append(this.root)
 	}
@@ -164,7 +164,7 @@ export class Tree {
 	
 	height(value, node = this.find(value)) {
 		if (node === null) return null;
-		if(node.leftNode === null && node.rightNode === null) return 0;
+		if (node.leftNode === null && node.rightNode === null) return 0;
 		let leftHeight = this.height(value, node.leftNode);
 		let rightHeight = this.height(value, node.rightNode);
 		if (leftHeight > rightHeight) {
@@ -176,15 +176,34 @@ export class Tree {
 		
 	}
 	
-		depth(value) {
-			const targetNode = this.find(value)
-			if (targetNode === null) { return null }
-			let currentNode = this.root
-			let nodeCount = 0
-			while (currentNode.value !== value) {
-				currentNode = (currentNode.value > value) ? currentNode.leftNode : currentNode.rightNode
-				nodeCount++
-			}
-			return nodeCount
+	depth(value) {
+		const targetNode = this.find(value)
+		if (targetNode === null) { return null }
+		let currentNode = this.root
+		let nodeCount = 0
+		while (currentNode.value !== value) {
+			currentNode = (currentNode.value > value) ? currentNode.leftNode : currentNode.rightNode
+			nodeCount++
 		}
+		return nodeCount
 	}
+	
+	isBalanced(node = this.root) {
+			if (node === null) return null;
+			if (node.leftNode === null && node.rightNode === null) return 0;
+			let leftHeight = this.isBalanced(node.leftNode);
+			let rightHeight = this.isBalanced(node.rightNode);
+			if (leftHeight > rightHeight) {leftHeight++;}
+			else {rightHeight++;}
+			
+			if (Math.abs(leftHeight - rightHeight) > 1) {
+				return false
+			}
+			 return true
+	}
+	
+	reBalance() {
+		this.array = cleanUpArray(this.array)
+		this.root = buildTree(this.array, )
+	}
+}
