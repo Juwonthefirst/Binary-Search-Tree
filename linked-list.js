@@ -13,6 +13,7 @@ export class LinkedList {
 		this.#head = null
 		this.#tail = null
 	}
+	
 	prepend(value) {
 		const newNode = new Node(value)
 		if (!this.#head) {
@@ -101,6 +102,7 @@ export class LinkedList {
 			currentNode = currentNode.next
 			nodeCount++
 		}
+		return -1 // for not found
 	}
 	
 	toString() {

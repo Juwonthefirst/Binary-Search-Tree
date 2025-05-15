@@ -1,4 +1,4 @@
-import {LinkedList} from './linked-list.js';
+import { LinkedList } from './linked-list.js';
 
 class Node {
 	constructor(value) {
@@ -49,11 +49,14 @@ export class Tree {
 	}
 	
 	find(value, node = this.root) {
-	if (node.value === value) {
-		return node
+		if (node === null) {
+			return null
+		}
+		if (node.value === value) {
+			return node
+		}
+		return (node.value > value) ? this.find(value, node.leftNode) : this.find(value, node.rightNode)
 	}
-	return (node.value > value) ? this.find(value, node.leftNode) : this.find(value, node.rightNode)
-}
 	
 	insert(value, node = this.root) {
 		if (this.array.includes(value)) {
@@ -77,7 +80,7 @@ export class Tree {
 	}
 	
 	deleteItem(value) {
-		const [node, parentNode] = this.#traverse(value,)
+		const [node, parentNode] = this.#traverse(value, )
 		if ((!node.rightNode) && (!node.leftNode) && (parentNode.leftNode === node)) {
 			parentNode.leftNode = null
 			
@@ -105,10 +108,10 @@ export class Tree {
 		}
 		
 		let index = this.array.indexOf(value)
-		this.array.splice(index,1)
+		this.array.splice(index, 1)
 	}
 	
-	levelOrder(callback){
+	levelOrder(callback) {
 		//level order with loop and linked list
 		/*if (!callback) {throw new Error('callback must be provided')}
 		this.queue.append(this.root)
@@ -121,17 +124,67 @@ export class Tree {
 		}*/
 		
 		//level order with recursion and linked list
-		if(this.queue.size === 0){
+		if (!callback) { throw new Error('callback must be provided') }
+		if (this.queue.size === 0) {
 			return
 		}
 		
 		const listNode = this.queue.removeAt(0)
 		const node = listNode.value
 		callback(node)
-		if(node.leftNode) this.queue.append(node.leftNode)
-		if(node.rightNode) this.queue.append(node.rightNode)
+		if (node.leftNode) this.queue.append(node.leftNode)
+		if (node.rightNode) this.queue.append(node.rightNode)
 		return this.levelOrder(callback)
 		
 	}
-}
-
+	
+	preOrder(callback, node = this.root) {
+		if (!callback) { throw new Error('callback must be provided') }
+		if (!node) { return null }
+		callback(node)
+		this.preOrder(callback, node.leftNode)
+		this.preOrder(callback, node.rightNode)
+	}
+	
+	inOrder(callback, node = this.root) {
+		if (!callback) { throw new Error('callback must be provided') }
+		if (!node) { return null }
+		this.inOrder(callback, node.leftNode)
+		callback(node)
+		this.inOrder(callback, node.rightNode)
+	}
+	
+	postOrder(callback, node = this.root) {
+		if (!callback) { throw new Error('callback must be provided') }
+		if (!node) { return null }
+		this.postOrder(callback, node.leftNode)
+		this.postOrder(callback, node.rightNode)
+		callback(node)
+	}
+	
+	height(value, node = this.find(value)) {
+		if (node === null) return null;
+		if(node.leftNode === null && node.rightNode === null) return 0;
+		let leftHeight = this.height(value, node.leftNode);
+		let rightHeight = this.height(value, node.rightNode);
+		if (leftHeight > rightHeight) {
+			return leftHeight + 1;
+		}
+		else {
+			return rightHeight + 1;
+		}
+		
+	}
+	
+		depth(value) {
+			const targetNode = this.find(value)
+			if (targetNode === null) { return null }
+			let currentNode = this.root
+			let nodeCount = 0
+			while (currentNode.value !== value) {
+				currentNode = (currentNode.value > value) ? currentNode.leftNode : currentNode.rightNode
+				nodeCount++
+			}
+			return nodeCount
+		}
+	}
