@@ -8,6 +8,8 @@ bsTree.insert(21)
 bsTree.insert(22)
 bsTree.insert(28)
 bsTree.insert(72)
-bsTree.deleteItem(27)
-
+//bsTree.deleteItem(27)
+bsTree.levelOrder((node) => {
+	node.value *= 2
+})
 console.log(bsTree)

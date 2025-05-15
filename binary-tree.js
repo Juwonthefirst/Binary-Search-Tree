@@ -1,3 +1,5 @@
+import {LinkedList} from './linked-list.js';
+
 class Node {
 	constructor(value) {
 		this.value = value
@@ -28,6 +30,8 @@ export class Tree {
 	constructor(array) {
 		this.array = cleanUpArray(array)
 		this.root = buildTree(this.array, 0, this.array.length - 1)
+		this.queue = new LinkedList()
+		this.queue.append(this.root)
 	}
 	
 	#getSuccessorAndParent(node, previous = null) {
@@ -37,12 +41,19 @@ export class Tree {
 		return this.#getSuccessorAndParent(node.leftNode, node)
 	}
 	
-	find(value, node = this.root, parentNode = null) {
+	#traverse(value, node = this.root, parentNode = null) {
 		if (node.value === value) {
 			return [node, parentNode]
 		}
-		return (node.value > value) ? this.find(value, node.leftNode, node) : this.find(value, node.rightNode, node)
+		return (node.value > value) ? this.#traverse(value, node.leftNode, node) : this.#traverse(value, node.rightNode, node)
 	}
+	
+	find(value, node = this.root) {
+	if (node.value === value) {
+		return node
+	}
+	return (node.value > value) ? this.find(value, node.leftNode) : this.find(value, node.rightNode)
+}
 	
 	insert(value, node = this.root) {
 		if (this.array.includes(value)) {
@@ -66,7 +77,7 @@ export class Tree {
 	}
 	
 	deleteItem(value) {
-		const [node, parentNode] = this.find(value)
+		const [node, parentNode] = this.#traverse(value,)
 		if ((!node.rightNode) && (!node.leftNode) && (parentNode.leftNode === node)) {
 			parentNode.leftNode = null
 			
@@ -96,4 +107,31 @@ export class Tree {
 		let index = this.array.indexOf(value)
 		this.array.splice(index,1)
 	}
+	
+	levelOrder(callback){
+		//level order with loop and linked list
+		/*if (!callback) {throw new Error('callback must be provided')}
+		this.queue.append(this.root)
+		while(this.queue.size !== 0){
+			let listNode = this.queue.removeAt(0)
+			let node = listNode.value
+			callback(node)
+			if(node.leftNode) this.queue.append(node.leftNode);
+			if(node.rightNode) this.queue.append(node.rightNode);
+		}*/
+		
+		//level order with recursion and linked list
+		if(this.queue.size === 0){
+			return
+		}
+		
+		const listNode = this.queue.removeAt(0)
+		const node = listNode.value
+		callback(node)
+		if(node.leftNode) this.queue.append(node.leftNode)
+		if(node.rightNode) this.queue.append(node.rightNode)
+		return this.levelOrder(callback)
+		
+	}
 }
+
